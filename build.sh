@@ -4,6 +4,9 @@
 
 classpath=".:lib/*"
 
+mkdir -p bin/server
+mkdir -p bin/client
+
 javac -cp $classpath -d bin/server simpledb/server/*
 
 javac -cp $classpath -d bin/client simpleclient/SimpleIJ.java
