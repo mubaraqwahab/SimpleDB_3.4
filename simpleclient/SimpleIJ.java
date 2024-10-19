@@ -53,11 +53,10 @@ public class SimpleIJ {
                } else if (cmd.equals("exit") || cmd.equals("exit;")) {
                   break;
                } else if (cmd.endsWith(";")) {
-                  String sqlCmd = cmd.substring(0, cmd.length() - 1);
-                  if (sqlCmd.startsWith("select")) {
-                     doQuery(stmt, sqlCmd);
+                  if (cmd.startsWith("select")) {
+                     doQuery(stmt, cmd);
                   } else {
-                     doUpdate(stmt, sqlCmd);
+                     doUpdate(stmt, cmd);
                   }
                   cmdLines.clear();
                }
