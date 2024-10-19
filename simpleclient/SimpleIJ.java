@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import simpledb.jdbc.embedded.EmbeddedDriver;
 import simpledb.jdbc.network.NetworkDriver;
@@ -33,20 +35,31 @@ public class SimpleIJ {
                .history(new DefaultHistory())
                .build();
 
-         String prompt = "SQL> ";
+         String defaultPrompt = "SQL=> ";
+         String continuationPrompt = "SQL-> ";
+
+         List<String> cmdLines = new ArrayList<String>();
 
          while (true) {
-            String cmd;
+            String prompt = cmdLines.size() == 0 ? defaultPrompt : continuationPrompt;
             try {
-               cmd = reader.readLine(prompt).trim().toLowerCase();
+               String line = reader.readLine(prompt).trim().toLowerCase();
+               cmdLines.add(line);
+
+               String cmd = String.join(" ", cmdLines).trim();
+
                if (cmd.isEmpty()) {
-                  // no op
-               } else if (cmd.equals("exit")) {
+                  cmdLines.clear();
+               } else if (cmd.equals("exit") || cmd.equals("exit;")) {
                   break;
-               } else if (cmd.toLowerCase().startsWith("select")) {
-                  doQuery(stmt, cmd);
-               } else {
-                  doUpdate(stmt, cmd);
+               } else if (cmd.endsWith(";")) {
+                  String sqlCmd = cmd.substring(0, cmd.length() - 1);
+                  if (sqlCmd.startsWith("select")) {
+                     doQuery(stmt, sqlCmd);
+                  } else {
+                     doUpdate(stmt, sqlCmd);
+                  }
+                  cmdLines.clear();
                }
             } catch (UserInterruptException e) {
                System.out.println("Interrupted. Exiting.");
